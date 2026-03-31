@@ -1,26 +1,6 @@
 import numpy as np
-from functions import relu, sigmoid, relu_backward, sigmoid_backward
+from functions import relu, sigmoid, _linear_forward, relu_backward, sigmoid_backward, _linear_backward
 import plotly.express as px
-
-
-def _linear_forward(A, W, b):
-    """
-    Implements the linear part of a layer's forward propagation.
-
-    Arguments:
-    A -- activations from previous layer (size of previous layer, number of examples)
-    W -- weights matrix: numpy array of shape (size of current layer, size of previous layer)
-    b -- bias vector, numpy array of shape (size of the current layer, 1)
-
-    Returns:
-    Z -- pre-activation parameter
-    cache -- a python tuple containing "A", "W" and "b"  for backpropagation
-    """
-    # Compute Z
-    Z = np.dot(W, A) + b
-    # Cache  A, W , b for backpropagation
-    cache = (A, W, b)
-    return Z, cache
 
 
 def _forward_propagation(A_prev, W, b, activation):
@@ -54,30 +34,6 @@ def _forward_propagation(A_prev, W, b, activation):
     return A, cache
 
 
-def _linear_backward(dZ, cache):
-    """
-    Implements the linear portion of backward propagation
-
-    Arguments:
-    dZ -- Gradient of the cost with respect to the linear output of the current layer
-    cache -- tuple of values (A_prev, W, b) coming from the forward propagation in the current layer
-
-    Returns:
-    dA_prev -- Gradient of the cost with respect to the activation (of the previous layer l-1), same shape as A_prev
-    dW -- Gradient of the cost with respect to W (current layer l), same shape as W
-    db -- Gradient of the cost with respect to b (current layer l), same shape as b
-    """
-    # Get the cache from forward propagation
-    A_prev, W, b = cache
-    # Get number of training examples
-    m = A_prev.shape[1]
-    # Compute gradients for W, b and A
-    dW = (1 / m) * np.dot(dZ, A_prev.T)
-    db = (1 / m) * np.sum(dZ, axis=1, keepdims=True)
-    dA_prev = np.dot(W.T, dZ)
-    return dA_prev, dW, db
-
-
 def _back_propagation(dA, cache, activation):
     """
     Implements the backward propagation for a single layer.
@@ -97,7 +53,6 @@ def _back_propagation(dA, cache, activation):
     # compute gradients for Z depending on the activation function
     if activation == "relu":
         dZ = relu_backward(dA, activation_cache)
-
     elif activation == "sigmoid":
         dZ = sigmoid_backward(dA, activation_cache)
     elif activation == "linear":
@@ -108,7 +63,7 @@ def _back_propagation(dA, cache, activation):
 
 
 class NeuralNetwork:
-    def __init__(self, layer_dimensions=[25, 16, 16, 1], learning_rate=0.01, problem_type="classification"):
+    def __init__(self, layer_dimensions=[25, 16, 16, 1], learning_rate=0.01, problem_type="classification", activation_function="relu", initialization_method="he", beta=0.0):
         """
         Parameters
         ----------
@@ -122,21 +77,37 @@ class NeuralNetwork:
         problem_type : str
             type of problem to solve, either "classification" or "regression".
 
+        activation_function : str
+            activation function to use for hidden layers, e.g., "relu", "sigmoid", "linear".
+
         """
 
         self.layer_dimensions = layer_dimensions
         self.learning_rate = learning_rate
         self.problem_type = problem_type
+        self.activation_function = activation_function
         self.n_layers = len(self.layer_dimensions)
-
+        self.initialization_method = initialization_method
+        self.beta = beta
 
     def initialize_parameters(self):
-        np.random.seed(3)
         for l in range(1, self.n_layers):
-            # Adding multiplayer np.sqrt(2. / self.layer_dimensions[l-1])
-            vars(self)[f'W{l}'] = np.random.randn(self.layer_dimensions[l], self.layer_dimensions[l - 1]) * np.sqrt(
-                2. / self.layer_dimensions[l - 1])
+            n_prev = self.layer_dimensions[l - 1]
+
+            if self.initialization_method == "he":
+                factor = np.sqrt(2. / n_prev)
+            elif self.initialization_method == "xavier":
+                factor = np.sqrt(1. / n_prev)
+            elif self.initialization_method == "small_random":
+                factor = 0.01
+            else:
+                factor = 0.0
+
+            vars(self)[f'W{l}'] = np.random.randn(self.layer_dimensions[l], n_prev) * factor
             vars(self)[f'b{l}'] = np.zeros((self.layer_dimensions[l], 1))
+
+            vars(self)[f'vW{l}'] = np.zeros_like(vars(self)[f'W{l}'])
+            vars(self)[f'vb{l}'] = np.zeros_like(vars(self)[f'b{l}'])
 
 
     def forward_propagation(self, X):
@@ -158,7 +129,7 @@ class NeuralNetwork:
         for l in range(1, L):
             A_prev = A
             # Forward propagate through the network except the last layer
-            A, cache = _forward_propagation(A_prev, vars(self)['W' + str(l)], vars(self)['b' + str(l)], "relu")
+            A, cache = _forward_propagation(A_prev, vars(self)['W' + str(l)], vars(self)['b' + str(l)], self.activation_function)
             caches.append(cache)
 
         if self.problem_type == "classification":
@@ -189,6 +160,7 @@ class NeuralNetwork:
             cost = (-1 / y.shape[0]) * (
                         np.dot(y, np.log(predictions + 1e-9).T) + np.dot((1 - y), np.log(1 - predictions + 1e-9).T))
         else:  # MSE for regression
+            y = y.reshape(predictions.shape)
             cost = (1 / (2 * y.shape[1])) * np.sum(np.square(predictions - y))
         return np.squeeze(cost)
 
@@ -212,6 +184,7 @@ class NeuralNetwork:
             dAL = - (np.divide(Y, predictions + 1e-9) - np.divide(1 - Y, 1 - predictions + 1e-9))
             activation_last = "sigmoid"
         else:  # regresja
+            Y = Y.reshape(predictions.shape)
             dAL = (predictions - Y)  # uproszczony gradient dla MSE + linear
             activation_last = "linear"
 
@@ -225,7 +198,7 @@ class NeuralNetwork:
             current_cache = caches[l]
             # compute gradients of the network layers
             vars(self)[f'dA{l}'], vars(self)[f'dW{l + 1}'], vars(self)[f'db{l + 1}'] = _back_propagation(
-                vars(self)[f'dA{l + 1}'], current_cache, activation="relu")
+                vars(self)[f'dA{l + 1}'], current_cache, activation=self.activation_function)
 
 
     def update_parameters(self):
@@ -235,9 +208,11 @@ class NeuralNetwork:
         L = self.n_layers - 1
         # Loop over parameters and update them using computed gradients
         for l in range(L):
-            vars(self)[f'W{l + 1}'] = vars(self)[f'W{l + 1}'] - self.learning_rate * vars(self)[f'dW{l + 1}']
-            vars(self)[f'b{l + 1}'] = vars(self)[f'b{l + 1}'] - self.learning_rate * vars(self)[f'db{l + 1}']
+            vars(self)[f'vW{l + 1}'] = self.beta * vars(self)[f'vW{l + 1}'] + (1 - self.beta) * vars(self)[f'dW{l + 1}']
+            vars(self)[f'vb{l + 1}'] = self.beta * vars(self)[f'vb{l + 1}'] + (1 - self.beta) * vars(self)[f'db{l + 1}']
 
+            vars(self)[f'W{l + 1}'] -= self.learning_rate * vars(self)[f'vW{l + 1}']
+            vars(self)[f'b{l + 1}'] -= self.learning_rate * vars(self)[f'vb{l + 1}']
 
     def fit(self, X, Y, epochs=2000, print_cost=True):
         """
