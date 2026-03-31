@@ -9,7 +9,7 @@ from NeuralNetwork import NeuralNetwork
 
 def main():
     solve_classification()
-    # solve_regression()
+    solve_regression()
 
 
 def solve_classification():
@@ -52,63 +52,63 @@ def solve_classification():
     all_results = []
 
 
-    # # 1. Parameter testing: Learning Rate
-    # learning_rates = [0.1, 0.01, 0.001, 0.0001]
-    # for i, lr in enumerate(learning_rates, start=1):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Learning Rate", lr, learning_rate=lr)
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
-    #
+    # 1. Parameter testing: Learning Rate
+    learning_rates = [0.1, 0.01, 0.001, 0.0001]
+    for i, lr in enumerate(learning_rates, start=1):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Learning Rate", lr, learning_rate=lr)
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
+
     # 2. Parameter testing: Epochs
     epochs_arr = [10, 100, 1000, 5000]
     for i, epch in enumerate(epochs_arr, start=1):
         results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Epochs", epch, epochs=epch)
         results.index = ["Model " + str(i)]
         all_results.append(results)
-    #
-    # # 3. Parameter testing: Activation function
-    # act_functions = ["relu", "sigmoid", "linear"]
-    # for i, function in enumerate(act_functions, start=1):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Activation Function", function, activation=function)
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
-    #
-    # # 4. Parameter testing: Number of neurons in hidden layer
-    # neurons = [2, 8, 16, 64]
-    # for i, neuron in enumerate(neurons, start=1):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, [X_train.shape[1], neuron, 1], "Number of Neurons", neuron)
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
-    #
-    # # 5. Parameter testing: Number of Layers
-    # layers = [[X_train.shape[1], 16, 1], [X_train.shape[1], 8, 8, 1], [X_train.shape[1], 4, 4, 8, 1], [X_train.shape[1], 4, 4, 4, 4, 1]]
-    # for i, l in enumerate(layers, start=1):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, l, "Number of Layers", l)
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
-    #
-    # # 6. Parameter testing: Testing split
-    # splits = [0.1, 0.2, 0.4, 0.8]
-    # for i, split_size in enumerate(splits, start=1):
-    #     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=split_size, random_state=42)
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, [X_train.shape[1], 16, 1], "Test Size", split_size)
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
-    #
-    # # 7. Parameter testing: weights initiation methods
-    # init_methods = ["he", "xavier", "small_random", "zeros"]
-    # for i, method in enumerate(init_methods, start=1):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Weight initiation methods", method, initiation_method=method)
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
 
-    # # 8. Parameter testing: Momentum
-    # beta_values = [0.0, 0.5, 0.9, 0.99]
-    # for i, b in enumerate(beta_values):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions,
-    #                                "Momentum (Beta)", b, beta=b)
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
+    # 3. Parameter testing: Activation function
+    act_functions = ["relu", "sigmoid", "linear"]
+    for i, function in enumerate(act_functions, start=1):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Activation Function", function, activation=function)
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
+
+    # 4. Parameter testing: Number of neurons in hidden layer
+    neurons = [2, 8, 16, 64]
+    for i, neuron in enumerate(neurons, start=1):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, [X_train.shape[1], neuron, 1], "Number of Neurons", neuron)
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
+
+    # 5. Parameter testing: Number of Layers
+    layers = [[X_train.shape[1], 16, 1], [X_train.shape[1], 8, 8, 1], [X_train.shape[1], 4, 4, 8, 1], [X_train.shape[1], 4, 4, 4, 4, 1]]
+    for i, l in enumerate(layers, start=1):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, l, "Number of Layers", l)
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
+
+    # 6. Parameter testing: Testing split
+    splits = [0.1, 0.2, 0.4, 0.8]
+    for i, split_size in enumerate(splits, start=1):
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=split_size, random_state=42)
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, [X_train.shape[1], 16, 1], "Test Size", split_size)
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
+
+    # 7. Parameter testing: weights initiation methods
+    init_methods = ["he", "xavier", "small_random", "zeros"]
+    for i, method in enumerate(init_methods, start=1):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Weight initiation methods", method, initiation_method=method)
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
+
+    # 8. Parameter testing: Momentum
+    beta_values = [0.0, 0.5, 0.9, 0.99]
+    for i, b in enumerate(beta_values):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions,
+                                   "Momentum (Beta)", b, beta=b)
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
 
 
     final_results  = pd.concat(all_results, ignore_index=False)
@@ -138,62 +138,62 @@ def solve_regression():
 
 
     all_results = []
-    # # Basic model
-    # results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "basic", 1, problem_type="regression")
-    # results.index = ["Model basic"]
-    # all_results.append(results)
-    #
-    # # 1. Parameter testing: learning rate
-    # learning_rates = [0.1, 0.01, 0.001, 0.0001]
-    # for i, lr in enumerate(learning_rates, start=1):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Learning Rate", lr, learning_rate=lr, problem_type="regression")
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
-    #
-    # # 2. Parameter testing: Epochs
-    # epochs_arr = [10, 100, 1000, 5000]
-    # for i, epch in enumerate(epochs_arr, start=1):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Epochs", epch, epochs=epch, problem_type="regression")
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
-    #
-    # # 3. Parameter testing: Activation function
-    # act_functions = ["relu", "sigmoid", "linear"]
-    # for i, function in enumerate(act_functions, start=1):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Activation Function", function, activation=function, problem_type="regression")
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
-    #
-    # # 4. Parameter testing: Number of neurons in hidden layer
-    # neuron_configs = [4, 8, 16, 32]
-    # for i, nc in enumerate(neuron_configs, start=1):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, [X_train.shape[1], nc, 1], "Neurons", nc, problem_type="regression")
-    #     results.index = ['Model ' + str(i)]
-    #     all_results.append(results)
-    #
-    # # 5. Parameter testing: Number of Layers
-    # layers = [[X_train.shape[1], 16, 1], [X_train.shape[1], 8, 8, 1], [X_train.shape[1], 4, 4, 8, 1], [X_train.shape[1], 4, 4, 4, 4, 1]]
-    # for i, l in enumerate(layers, start=1):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, l, "Number of Layers", l, problem_type="regression")
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
-    #
-    # # 6. Parameter testing: Testing split
-    # splits = [0.1, 0.2, 0.4, 0.8]
-    # for i, split_size in enumerate(splits, start=1):
-    #     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=split_size, random_state=42)
-    #     y_train = scaler_y.fit_transform(y_train)
-    #     y_test = scaler_y.transform(y_test)
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, [X_train.shape[1], 16, 1], "Test Size", split_size, problem_type="regression")
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
-    #
-    # # 7. Parameter testing: weights initiation methods
-    # init_methods = ["he", "xavier", "small_random", "zeros"]
-    # for i, method in enumerate(init_methods, start=1):
-    #     results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Weight initiation methods", method, initiation_method=method, problem_type="regression")
-    #     results.index = ["Model " + str(i)]
-    #     all_results.append(results)
+    # Basic model
+    results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "basic", 1, problem_type="regression")
+    results.index = ["Model basic"]
+    all_results.append(results)
+
+    # 1. Parameter testing: learning rate
+    learning_rates = [0.1, 0.01, 0.001, 0.0001]
+    for i, lr in enumerate(learning_rates, start=1):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Learning Rate", lr, learning_rate=lr, problem_type="regression")
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
+
+    # 2. Parameter testing: Epochs
+    epochs_arr = [10, 100, 1000, 5000]
+    for i, epch in enumerate(epochs_arr, start=1):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Epochs", epch, epochs=epch, problem_type="regression")
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
+
+    # 3. Parameter testing: Activation function
+    act_functions = ["relu", "sigmoid", "linear"]
+    for i, function in enumerate(act_functions, start=1):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Activation Function", function, activation=function, problem_type="regression")
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
+
+    # 4. Parameter testing: Number of neurons in hidden layer
+    neuron_configs = [4, 8, 16, 32]
+    for i, nc in enumerate(neuron_configs, start=1):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, [X_train.shape[1], nc, 1], "Neurons", nc, problem_type="regression")
+        results.index = ['Model ' + str(i)]
+        all_results.append(results)
+
+    # 5. Parameter testing: Number of Layers
+    layers = [[X_train.shape[1], 16, 1], [X_train.shape[1], 8, 8, 1], [X_train.shape[1], 4, 4, 8, 1], [X_train.shape[1], 4, 4, 4, 4, 1]]
+    for i, l in enumerate(layers, start=1):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, l, "Number of Layers", l, problem_type="regression")
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
+
+    # 6. Parameter testing: Testing split
+    splits = [0.1, 0.2, 0.4, 0.8]
+    for i, split_size in enumerate(splits, start=1):
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=split_size, random_state=42)
+        y_train = scaler_y.fit_transform(y_train)
+        y_test = scaler_y.transform(y_test)
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, [X_train.shape[1], 16, 1], "Test Size", split_size, problem_type="regression")
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
+
+    # 7. Parameter testing: weights initiation methods
+    init_methods = ["he", "xavier", "small_random", "zeros"]
+    for i, method in enumerate(init_methods, start=1):
+        results = train_evaluate_model(X_train, y_train, X_test, y_test, layer_dimensions, "Weight initiation methods", method, initiation_method=method, problem_type="regression")
+        results.index = ["Model " + str(i)]
+        all_results.append(results)
 
     # 8. Parameter testing: Momentum
     beta_values = [0.0, 0.5, 0.9, 0.99]
